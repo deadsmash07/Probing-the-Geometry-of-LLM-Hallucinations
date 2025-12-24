@@ -1,0 +1,374 @@
+mats) ) (main) root@C.29106652:/workspace$ python exp_hierarchical_probing.py --model deepseek --experiment all
+Running on cuda
+🎲 Global seed set to 42 for reproducibility
+============================================================
+🔧 Loading Reasoning Model: DeepSeek-R1-Distill-Qwen-7B
+============================================================
+...downloading via Transformers (AutoModel) to CPU...
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:00<00:00,  2.08it/s]
+...wrapping in HookedTransformer on cuda...
+Loaded pretrained model Qwen/Qwen2.5-7B-Instruct into HookedTransformer
+
+============================================================
+EXPERIMENT: Dyck String Completion
+============================================================
+  📊 Using CONFIG: dyck_samples=300, dyck_max_depth=5
+Extracting activations from all 28 layers...
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:10<00:00, 29.01it/s]
+
+📊 Depth Probe (Logistic Regression) per Layer:
+  Layer 0: Accuracy = 55.00%, Pearson r = 0.7311
+  Layer 5: Accuracy = 53.33%, Pearson r = 0.8748
+  Layer 10: Accuracy = 55.00%, Pearson r = 0.8755
+  Layer 15: Accuracy = 48.33%, Pearson r = 0.8376
+  Layer 20: Accuracy = 56.67%, Pearson r = 0.8404
+  Layer 25: Accuracy = 60.00%, Pearson r = 0.8862
+
+✅ Saved: results/exp_hierarchical_probing/deepseek_dyck_depth_correlation.png
+
+============================================================
+EXPERIMENT: Binary Tree Traversal (Pairwise Distance)
+============================================================
+  📊 Using CONFIG: binary_tree_samples=300, binary_tree_depth=5
+  📊 Generated 300 samples from a shared depth-5 tree
+  📊 Tree has 31 nodes
+  📊 Computing pairwise tree distances (actual path lengths)...
+Extracting activations from all 28 layers...
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:35<00:00,  8.51it/s]
+
+📊 Training Pairwise Probes on Layer 14:
+  Using hyperparameter sweep for FAIR comparison (addresses optimizer artifact concern)
+  Train: 240 samples, Test: 60 samples
+
+  🔷 Euclidean Pairwise Probe (with hyperparameter sweep):
+  Running hyperparameter sweep for fair comparison...
+  Epoch 0: Loss = 10.0727, Pearson r = 0.1139
+  Epoch 50: Loss = 0.4863, Pearson r = 0.9578
+  Epoch 100: Loss = 0.2214, Pearson r = 0.9817
+  Epoch 150: Loss = 0.1879, Pearson r = 0.9855
+    Config lr=0.001, epochs=200: r = 0.9855
+  Epoch 0: Loss = 10.2416, Pearson r = 0.1388
+  Epoch 50: Loss = 0.4599, Pearson r = 0.9601
+  Epoch 100: Loss = 0.2266, Pearson r = 0.9811
+  Epoch 150: Loss = 0.1897, Pearson r = 0.9855
+  Epoch 200: Loss = 0.1634, Pearson r = 0.9869
+  Epoch 250: Loss = 0.1620, Pearson r = 0.9881
+  Epoch 300: Loss = 0.1316, Pearson r = 0.9904
+  Epoch 350: Loss = 0.1207, Pearson r = 0.9917
+    Config lr=0.001, epochs=400: r = 0.9917
+  Epoch 0: Loss = 11.0167, Pearson r = 0.1134
+  Epoch 50: Loss = 4.5885, Pearson r = 0.6508
+  Epoch 100: Loss = 3.5761, Pearson r = 0.6249
+  Epoch 150: Loss = 0.6000, Pearson r = 0.9406
+    Config lr=0.01, epochs=200: r = 0.9406
+  Epoch 0: Loss = 9.4658, Pearson r = 0.1206
+  Epoch 50: Loss = 1.1528, Pearson r = 0.8822
+  Epoch 100: Loss = 1.2689, Pearson r = 0.8701
+  Epoch 150: Loss = 0.6865, Pearson r = 0.9331
+  Epoch 200: Loss = 2.5452, Pearson r = 0.7839
+  Epoch 250: Loss = 0.3073, Pearson r = 0.9736
+  Epoch 300: Loss = 0.4100, Pearson r = 0.9654
+  Epoch 306: Loss = 0.2153, Pearson r = 0.9821 (early stop)
+    Config lr=0.01, epochs=400: r = 0.9736
+  Epoch 0: Loss = 12.1078, Pearson r = 0.1048
+    Config lr=0.05, epochs=200: r = 0.1048
+  Epoch 0: Loss = 15.3815, Pearson r = 0.1169
+    Config lr=0.05, epochs=400: r = 0.1169
+  ✅ Best config: lr=0.001, epochs=400, r=0.9917
+
+  🔶 Hyperbolic Pairwise Probe (with hyperparameter sweep):
+  Running hyperparameter sweep for fair comparison...
+  Epoch 0: Loss = 22.8118, Pearson r = 0.1073
+  Epoch 50: Loss = 1.5806, Pearson r = 0.8724
+  Epoch 100: Loss = 1.2561, Pearson r = 0.9013
+  Epoch 150: Loss = 1.1810, Pearson r = 0.9037
+    Config lr=0.001, epochs=200: r = 0.9037
+  Epoch 0: Loss = 22.8727, Pearson r = 0.0939
+  Epoch 50: Loss = 1.4321, Pearson r = 0.8864
+  Epoch 100: Loss = 1.1834, Pearson r = 0.9037
+  Epoch 150: Loss = 1.1653, Pearson r = 0.9023
+  Epoch 200: Loss = 1.1227, Pearson r = 0.9032
+  Epoch 250: Loss = 1.1238, Pearson r = 0.9023
+  Epoch 300: Loss = 1.1220, Pearson r = 0.9025
+  Epoch 350: Loss = 1.1017, Pearson r = 0.9020
+    Config lr=0.001, epochs=400: r = 0.9037
+  Epoch 0: Loss = 23.5294, Pearson r = 0.1027
+  Epoch 50: Loss = 1.3643, Pearson r = 0.8904
+  Epoch 100: Loss = 1.1660, Pearson r = 0.9026
+  Epoch 150: Loss = 1.1231, Pearson r = 0.9027
+    Config lr=0.01, epochs=200: r = 0.9027
+  Epoch 0: Loss = 23.1195, Pearson r = 0.1015
+  Epoch 50: Loss = 1.3327, Pearson r = 0.8948
+  Epoch 100: Loss = 1.1576, Pearson r = 0.9027
+  Epoch 150: Loss = 1.1272, Pearson r = 0.9024
+  Epoch 200: Loss = 1.1094, Pearson r = 0.9025
+  Epoch 250: Loss = 1.1127, Pearson r = 0.9020
+  Epoch 300: Loss = 1.0964, Pearson r = 0.9012
+  Epoch 350: Loss = 1.0955, Pearson r = 0.9011
+    Config lr=0.01, epochs=400: r = 0.9027
+  Epoch 0: Loss = 23.4090, Pearson r = 0.0658
+  Epoch 50: Loss = 1.8010, Pearson r = 0.8621
+  Epoch 100: Loss = 1.2465, Pearson r = 0.8998
+  Epoch 150: Loss = 1.1576, Pearson r = 0.9027
+    Config lr=0.05, epochs=200: r = 0.9027
+  Epoch 0: Loss = 22.1229, Pearson r = 0.0880
+  Epoch 50: Loss = 1.6417, Pearson r = 0.8696
+  Epoch 100: Loss = 1.2113, Pearson r = 0.9018
+  Epoch 150: Loss = 1.1375, Pearson r = 0.9028
+  Epoch 200: Loss = 1.1293, Pearson r = 0.9023
+  Epoch 250: Loss = 1.1139, Pearson r = 0.9024
+  Epoch 300: Loss = 1.0999, Pearson r = 0.9017
+  Epoch 350: Loss = 1.0978, Pearson r = 0.9013
+    Config lr=0.05, epochs=400: r = 0.9028
+  ✅ Best config: lr=0.001, epochs=400, r=0.9037
+
+📊 Results (GENERALIZATION on held-out test set):
+  Euclidean:  Train r=0.9917, Test r=0.8765
+  Hyperbolic: Train r=0.9037, Test r=0.8449
+
+📊 Layer Sweep (Euclidean Probe):
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 28/28 [00:01<00:00, 23.88it/s]
+
+✅ Saved: results/exp_hierarchical_probing/deepseek_binary_tree_correlation.png
+✅ Saved: results/exp_hierarchical_probing/deepseek_geometry_comparison.png
+
+============================================================
+EXTENSION: Hallucination Detection with H-Probes
+============================================================
+⚠️  METHODOLOGY: Train ONLY on TRUE, Test on HALLUCINATION
+   (This avoids circular training logic)
+Running on cuda
+
+🎮 GPU Configuration:
+  Found 1 GPU(s):
+    GPU 0: NVIDIA GeForce RTX 5090 (31.4 GB)
+  Single GPU mode
+  TRAIN set: 100 TRUE samples (only)
+  TEST set: 100 HALLUCINATION samples (held out)
+
+📊 Extracting activations from Layer 23...
+TRUE: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:05<00:00, 19.85it/s]
+HALLUCINATION: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:05<00:00, 19.66it/s]
+
+📊 Building TRUE-TRUE distance matrix (for training)...
+
+📊 Training Pairwise Probe on TRUE samples ONLY:
+   (NOT optimizing on hallucination - this is the unsupervised test)
+  Epoch 0: Loss = 139.4669, Pearson r = -0.0057
+  Epoch 50: Loss = 28.6224, Pearson r = 0.0462
+  Epoch 100: Loss = 25.8308, Pearson r = 0.0654
+  Epoch 150: Loss = 6.7288, Pearson r = 0.1108
+
+📊 RESULTS (Probe trained on TRUE only):
+  TRAIN SET (TRUE-TRUE):
+    1-hop ↔ 1-hop: 1.321
+    5-hop ↔ 5-hop: 1.487
+    1-hop ↔ 5-hop: 2.997
+
+  TEST SET (held out - NOT used in training):
+    TRUE ↔ HALLUCINATION: 5.363
+    HALLUCINATION ↔ HALLUCINATION: 7.009
+
+📊 INTERPRETATION:
+  ✅ Hallucinations are FURTHER from truths than deep truths are from shallow truths!
+     → Probe detects hallucinations WITHOUT being trained on them!
+
+✅ Saved: results/exp_hierarchical_probing/deepseek_hallucination_pairwise.png
+
+============================================================
+H-PROBES EXPERIMENTS COMPLETE (DEEPSEEK)
+============================================================
+Results saved to: results/exp_hierarchical_probing/
+((mats) ) (main) root@C.29106652:/workspace$ python exp_hierarchical_probing.py --model qwen --experiment all
+Running on cuda
+🎲 Global seed set to 42 for reproducibility
+============================================================
+🔧 Loading Standard Model: Qwen/Qwen2.5-7B-Instruct
+============================================================
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4/4 [00:01<00:00,  3.01it/s]
+WARNING:root:You are not using LayerNorm, so the writing weights can't be centered! Skipping
+Loaded pretrained model Qwen/Qwen2.5-7B-Instruct into HookedTransformer
+
+============================================================
+EXPERIMENT: Dyck String Completion
+============================================================
+  📊 Using CONFIG: dyck_samples=300, dyck_max_depth=5
+Extracting activations from all 28 layers...
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:10<00:00, 28.92it/s]
+
+📊 Depth Probe (Logistic Regression) per Layer:
+  Layer 0: Accuracy = 53.33%, Pearson r = 0.7835
+  Layer 5: Accuracy = 53.33%, Pearson r = 0.8793
+  Layer 10: Accuracy = 51.67%, Pearson r = 0.8643
+  Layer 15: Accuracy = 53.33%, Pearson r = 0.8651
+  Layer 20: Accuracy = 61.67%, Pearson r = 0.9018
+  Layer 25: Accuracy = 76.67%, Pearson r = 0.9408
+
+✅ Saved: results/exp_hierarchical_probing/qwen_dyck_depth_correlation.png
+
+============================================================
+EXPERIMENT: Binary Tree Traversal (Pairwise Distance)
+============================================================
+  📊 Using CONFIG: binary_tree_samples=300, binary_tree_depth=5
+  📊 Generated 300 samples from a shared depth-5 tree
+  📊 Tree has 31 nodes
+  📊 Computing pairwise tree distances (actual path lengths)...
+Extracting activations from all 28 layers...
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:35<00:00,  8.38it/s]
+
+📊 Training Pairwise Probes on Layer 14:
+  Using hyperparameter sweep for FAIR comparison (addresses optimizer artifact concern)
+  Train: 240 samples, Test: 60 samples
+
+  🔷 Euclidean Pairwise Probe (with hyperparameter sweep):
+  Running hyperparameter sweep for fair comparison...
+  Epoch 0: Loss = 16.9212, Pearson r = 0.1137
+  Epoch 50: Loss = 3.2142, Pearson r = 0.6060
+  Epoch 100: Loss = 1.5727, Pearson r = 0.8367
+  Epoch 150: Loss = 1.1693, Pearson r = 0.8830
+    Config lr=0.001, epochs=200: r = 0.8830
+  Epoch 0: Loss = 17.1012, Pearson r = 0.1052
+  Epoch 50: Loss = 3.4995, Pearson r = 0.5585
+  Epoch 100: Loss = 1.9909, Pearson r = 0.7855
+  Epoch 150: Loss = 1.2958, Pearson r = 0.8690
+  Epoch 200: Loss = 0.9196, Pearson r = 0.9091
+  Epoch 250: Loss = 0.6949, Pearson r = 0.9342
+  Epoch 300: Loss = 0.5441, Pearson r = 0.9489
+  Epoch 350: Loss = 0.4475, Pearson r = 0.9596
+    Config lr=0.001, epochs=400: r = 0.9596
+  Epoch 0: Loss = 17.0741, Pearson r = 0.0981
+  Epoch 50: Loss = 3.0658, Pearson r = 0.6291
+  Epoch 100: Loss = 1.9005, Pearson r = 0.7907
+  Epoch 150: Loss = 1.4002, Pearson r = 0.8577
+    Config lr=0.01, epochs=200: r = 0.8577
+  Epoch 0: Loss = 17.1476, Pearson r = 0.1049
+  Epoch 50: Loss = 2.9830, Pearson r = 0.6423
+  Epoch 100: Loss = 1.2725, Pearson r = 0.8681
+  Epoch 150: Loss = 0.9919, Pearson r = 0.9028
+  Epoch 200: Loss = 1.8644, Pearson r = 0.8255
+  Epoch 250: Loss = 0.5225, Pearson r = 0.9513
+  Epoch 300: Loss = 0.5905, Pearson r = 0.9434
+  Epoch 350: Loss = 0.4916, Pearson r = 0.9534
+  Epoch 383: Loss = 0.3466, Pearson r = 0.9679 (early stop)
+    Config lr=0.01, epochs=400: r = 0.9534
+  Epoch 0: Loss = 17.0750, Pearson r = 0.1016
+  Epoch 50: Loss = 6.7846, Pearson r = 0.2841
+  Epoch 100: Loss = 13.3749, Pearson r = 0.4253
+  Epoch 150: Loss = 7.2938, Pearson r = 0.5538
+    Config lr=0.05, epochs=200: r = 0.5538
+  Epoch 0: Loss = 15.9008, Pearson r = 0.1139
+  Epoch 50: Loss = 6.1650, Pearson r = 0.3239
+  Epoch 100: Loss = 6.5027, Pearson r = 0.5284
+  Epoch 150: Loss = 4.6805, Pearson r = 0.6193
+  Epoch 200: Loss = 1.9903, Pearson r = 0.7910
+  Epoch 250: Loss = 2.7749, Pearson r = 0.7237
+  Epoch 300: Loss = 0.6748, Pearson r = 0.9368
+  Epoch 350: Loss = 0.5144, Pearson r = 0.9521
+    Config lr=0.05, epochs=400: r = 0.9521
+  ✅ Best config: lr=0.001, epochs=400, r=0.9596
+
+  🔶 Hyperbolic Pairwise Probe (with hyperparameter sweep):
+  Running hyperparameter sweep for fair comparison...
+  Epoch 0: Loss = 26.3590, Pearson r = 0.1205
+  Epoch 50: Loss = 3.6676, Pearson r = 0.5413
+  Epoch 100: Loss = 2.3108, Pearson r = 0.7928
+  Epoch 150: Loss = 1.7061, Pearson r = 0.8684
+    Config lr=0.001, epochs=200: r = 0.8684
+  Epoch 0: Loss = 26.4822, Pearson r = 0.1019
+  Epoch 50: Loss = 3.5640, Pearson r = 0.5628
+  Epoch 100: Loss = 2.0198, Pearson r = 0.8353
+  Epoch 150: Loss = 1.5589, Pearson r = 0.8855
+  Epoch 200: Loss = 1.4260, Pearson r = 0.8977
+  Epoch 250: Loss = 1.3413, Pearson r = 0.9045
+  Epoch 300: Loss = 1.3225, Pearson r = 0.9041
+  Epoch 350: Loss = 1.2618, Pearson r = 0.9076
+    Config lr=0.001, epochs=400: r = 0.9076
+  Epoch 0: Loss = 26.3271, Pearson r = 0.1035
+  Epoch 50: Loss = 3.0737, Pearson r = 0.6662
+  Epoch 100: Loss = 1.6168, Pearson r = 0.8757
+  Epoch 150: Loss = 1.4268, Pearson r = 0.8946
+    Config lr=0.01, epochs=200: r = 0.8946
+  Epoch 0: Loss = 26.4379, Pearson r = 0.1075
+  Epoch 50: Loss = 3.4652, Pearson r = 0.5884
+  Epoch 100: Loss = 1.8008, Pearson r = 0.8526
+  Epoch 150: Loss = 1.4762, Pearson r = 0.8931
+  Epoch 200: Loss = 1.4059, Pearson r = 0.8929
+  Epoch 250: Loss = 1.2342, Pearson r = 0.9033
+  Epoch 300: Loss = 1.2961, Pearson r = 0.8950
+  Epoch 350: Loss = 1.2669, Pearson r = 0.8987
+    Config lr=0.01, epochs=400: r = 0.9033
+  Epoch 0: Loss = 26.5755, Pearson r = 0.1140
+  Epoch 50: Loss = 3.9631, Pearson r = 0.4779
+  Epoch 100: Loss = 3.0102, Pearson r = 0.6806
+  Epoch 150: Loss = 1.8105, Pearson r = 0.8486
+    Config lr=0.05, epochs=200: r = 0.8486
+  Epoch 0: Loss = 26.4329, Pearson r = 0.1173
+  Epoch 50: Loss = 3.9543, Pearson r = 0.4793
+  Epoch 100: Loss = 3.0175, Pearson r = 0.6782
+  Epoch 150: Loss = 1.7590, Pearson r = 0.8580
+  Epoch 200: Loss = 1.4008, Pearson r = 0.8973
+  Epoch 250: Loss = 1.2859, Pearson r = 0.9019
+  Epoch 300: Loss = 1.2301, Pearson r = 0.9012
+  Epoch 350: Loss = 1.2153, Pearson r = 0.9014
+    Config lr=0.05, epochs=400: r = 0.9019
+  ✅ Best config: lr=0.001, epochs=400, r=0.9076
+
+📊 Results (GENERALIZATION on held-out test set):
+  Euclidean:  Train r=0.9596, Test r=0.8465
+  Hyperbolic: Train r=0.9076, Test r=0.8765
+
+📊 Layer Sweep (Euclidean Probe):
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 28/28 [00:01<00:00, 23.35it/s]
+
+✅ Saved: results/exp_hierarchical_probing/qwen_binary_tree_correlation.png
+✅ Saved: results/exp_hierarchical_probing/qwen_geometry_comparison.png
+
+============================================================
+EXTENSION: Hallucination Detection with H-Probes
+============================================================
+⚠️  METHODOLOGY: Train ONLY on TRUE, Test on HALLUCINATION
+   (This avoids circular training logic)
+Running on cuda
+
+🎮 GPU Configuration:
+  Found 1 GPU(s):
+    GPU 0: NVIDIA GeForce RTX 5090 (31.4 GB)
+  Single GPU mode
+  TRAIN set: 100 TRUE samples (only)
+  TEST set: 100 HALLUCINATION samples (held out)
+
+📊 Extracting activations from Layer 23...
+TRUE: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:05<00:00, 19.75it/s]
+HALLUCINATION: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:05<00:00, 19.56it/s]
+
+📊 Building TRUE-TRUE distance matrix (for training)...
+
+📊 Training Pairwise Probe on TRUE samples ONLY:
+   (NOT optimizing on hallucination - this is the unsupervised test)
+  Epoch 0: Loss = 14.4715, Pearson r = 0.1293
+  Epoch 50: Loss = 2.6415, Pearson r = 0.3353
+  Epoch 100: Loss = 1.3052, Pearson r = 0.4415
+  Epoch 150: Loss = 0.7653, Pearson r = 0.7145
+
+📊 RESULTS (Probe trained on TRUE only):
+  TRAIN SET (TRUE-TRUE):
+    1-hop ↔ 1-hop: 1.267
+    5-hop ↔ 5-hop: 1.280
+    1-hop ↔ 5-hop: 2.883
+
+  TEST SET (held out - NOT used in training):
+    TRUE ↔ HALLUCINATION: 2.573
+    HALLUCINATION ↔ HALLUCINATION: 2.988
+
+📊 INTERPRETATION:
+  ≈ Hallucinations fall within the TRUE distribution
+     → Probe cannot distinguish (hypothesis fails)
+
+✅ Saved: results/exp_hierarchical_probing/qwen_hallucination_pairwise.png
+
+============================================================
+H-PROBES EXPERIMENTS COMPLETE (QWEN)
+============================================================
+Results saved to: results/exp_hierarchical_probing/

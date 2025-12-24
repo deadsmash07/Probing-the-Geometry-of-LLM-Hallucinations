@@ -1,0 +1,402 @@
+((mats) ) (main) root@C.29103252:/workspace$ python3 exp_validation_suite.py --model deepseek --seed 42
+Running on cuda
+
+🎮 GPU Configuration:
+  Found 1 GPU(s):
+    GPU 0: NVIDIA GeForce RTX 5090 (31.4 GB)
+  Single GPU mode
+🎲 Global seed set to 42 for reproducibility
+📊 Using CONFIG default samples: 300 (for deepseek)
+
+--- Generating Balanced Datasets (seed=42) ---
+
+Generating fiction data...
+📊 Balanced Dataset (seed=42): 300 samples
+   • True: 100, Hall: 100, Unrel: 100
+
+Generating Animals (real English) data...
+📊 Balanced Dataset (seed=43): 300 samples
+   • True: 100, Hall: 100, Unrel: 100
+
+Generating Geography data (for cross-domain test)...
+📊 Balanced Dataset (seed=44): 300 samples
+   • True: 100, Hall: 100, Unrel: 100
+
+📊 Fiction Dataset Validation:
+   Total: 300 samples
+   • TRUE: 100 (33.3%)
+   • Hallucination: 100 (33.3%)
+   • Unrelated: 100 (33.3%)
+   • Depth range: 1 to 5
+   • 1-hop: 24, 5-hop: 17
+
+📊 Real English Dataset Validation:
+   Total: 300 samples
+   • TRUE: 100 (33.3%)
+   • Hallucination: 100 (33.3%)
+   • Unrelated: 100 (33.3%)
+   • Depth range: 1 to 5
+   • 1-hop: 24, 5-hop: 20
+
+🔬 Probe after reasoning: True
+Using single-GPU inference
+🔧 Loading Reasoning Model: DeepSeek-R1-Distill-Qwen-7B on cuda
+...downloading via Transformers (AutoModel) to CPU...
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:01<00:00,  1.38it/s]
+...wrapping DeepSeek weights in HookedTransformer on cuda...
+Loaded pretrained model Qwen/Qwen2.5-7B-Instruct into HookedTransformer
+✅ DeepSeek-R1 model loaded successfully!
+
+Extracting activations (Fiction)...
+Probing Layer 23 on 300 samples (from CONFIG['deepseek'])
+  Probe after reasoning: True
+  Reasoning tokens: 512
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [1:03:23<00:00, 12.68s/it]
+🧠 Thinking Token Probe Stats (MI Peaks):
+  Avg thinking tokens per sample: 25.3
+  Samples with 0 thinking tokens (fallback): 37/300 (12.3%)
+  Min/Max thinking tokens: 0/48
+
+Extracting activations (Real English)...
+Probing Layer 23 on 300 samples (from CONFIG['deepseek'])
+  Probe after reasoning: True
+  Reasoning tokens: 512
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [1:04:22<00:00, 12.88s/it]
+
+🧠 Thinking Token Probe Stats (MI Peaks):
+  Avg thinking tokens per sample: 24.7
+  Samples with 0 thinking tokens (fallback): 41/300 (13.7%)
+  Min/Max thinking tokens: 0/62
+
+Training base mapper on fiction data...
+  📊 Training on 100 TRUE samples, depths range: [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.013082, Dist: mean=0.254, std=0.015
+  Epoch 100: Loss = 0.003633, Dist: mean=0.188, std=0.057
+  Epoch 200: Loss = 0.001838, Dist: mean=0.187, std=0.076
+  ✅ Training complete: Loss improved by 92.3% (0.0131 → 0.0010)
+
+=== Exp 3A: Real English Control ===
+Saved: results/exp_validation_suite/deepseek/deepseek_exp3a_real_english.png
+  True (1 Hop): Mean = 0.30, Std = 0.13, N = 27
+  True (5 Hop): Mean = 0.40, Std = 0.15, N = 20
+  Hallucination: Mean = 0.36, Std = 0.13, N = 100
+  Unrelated: Mean = 0.37, Std = 0.13, N = 100
+
+=== Exp 3B: Unrelated Baseline ===
+Saved: results/exp_validation_suite/deepseek/deepseek_exp3b_unrelated_baseline.png
+  True (1 Hop): Mean = 0.18, Std = 0.05, N = 30
+  True (5 Hop): Mean = 0.61, Std = 0.10, N = 23
+  Hallucination: Mean = 0.39, Std = 0.11, N = 100
+  Unrelated: Mean = 0.36, Std = 0.14, N = 100
+
+=== Exp 3C: Trained Probe ===
+Training fresh probe on fiction data...
+  📊 Training on 100 TRUE samples, depths range: [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.009605, Dist: mean=0.224, std=0.013
+  Epoch 100: Loss = 0.003265, Dist: mean=0.187, std=0.061
+  Epoch 200: Loss = 0.001964, Dist: mean=0.186, std=0.074
+  ✅ Training complete: Loss improved by 86.7% (0.0096 → 0.0013)
+Saved: results/exp_validation_suite/deepseek/deepseek_exp3c_trained_probe.png
+  True (1 Hop): Mean = 0.19, Std = 0.06, N = 30
+  True (5 Hop): Mean = 0.59, Std = 0.09, N = 23
+  Hallucination: Mean = 0.40, Std = 0.10, N = 100
+  Unrelated: Mean = 0.37, Std = 0.14, N = 100
+
+=== Exp 3D: Cross-Domain Generalization (Animals → Geography) ===
+  This tests if hierarchy encoding generalizes across domains!
+
+Extracting activations (Geography)...
+Probing Layer 23 on 300 samples (from CONFIG['deepseek'])
+  Probe after reasoning: True
+  Reasoning tokens: 512
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [40:15<00:00,  8.05s/it]
+🧠 Thinking Token Probe Stats (MI Peaks):
+  Avg thinking tokens per sample: 14.3
+  Samples with 0 thinking tokens (fallback): 139/300 (46.3%)
+  Min/Max thinking tokens: 0/48
+
+Training mapper on Animals domain...
+  📊 Training on 100 TRUE samples, depths range: [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.015041, Dist: mean=0.269, std=0.034
+  Epoch 100: Loss = 0.004186, Dist: mean=0.186, std=0.042
+  Epoch 200: Loss = 0.002391, Dist: mean=0.185, std=0.056
+  ✅ Training complete: Loss improved by 92.0% (0.0150 → 0.0012)
+Saved: results/exp_validation_suite/deepseek/deepseek_exp3d_cross_domain.png
+  True (1 Hop): Mean = 0.43, Std = 0.08, N = 28
+  True (5 Hop): Mean = 0.49, Std = 0.11, N = 13
+  Hallucination: Mean = 0.45, Std = 0.07, N = 100
+  Unrelated: Mean = 0.47, Std = 0.07, N = 100
+
+============================================================
+PHASE 4: METHODOLOGY VALIDATION EXPERIMENTS
+============================================================
+These experiments address the circular training logic critique.
+
+=== Exp 4A: TRUE vs HALLUCINATION Classification ===
+  Training classifier on BOTH classes (not just TRUE)...
+  This is the proper test of geometric separability.
+
+  📊 Training classifier: 100 TRUE, 100 HALL samples
+     Train: 160, Test: 40
+     LayerNorm: True
+     Epoch 0: Loss = 0.7083, Train Acc = 48.75%
+     Epoch 100: Loss = 0.0559, Train Acc = 97.50%
+     Epoch 200: Loss = 0.0015, Train Acc = 100.00%
+  ✅ Test Results: Accuracy = 87.50%, AUROC = 0.937
+Saved: results/exp_validation_suite/deepseek/deepseek_exp4a_classification.png
+  🎉 HIGH ACCURACY: Geometries ARE distinct! Hypothesis supported.
+
+=== Exp 4B: LayerNorm Ablation Study ===
+  Testing if magnitude information (removed by LayerNorm) is important...
+  📊 Training classifier: 100 TRUE, 100 HALL samples
+     Train: 160, Test: 40
+     LayerNorm: False
+     Epoch 0: Loss = 0.6910, Train Acc = 53.75%
+     Epoch 100: Loss = 0.0125, Train Acc = 100.00%
+     Epoch 200: Loss = 0.0026, Train Acc = 100.00%
+  ✅ Test Results: Accuracy = 85.00%, AUROC = 0.942
+
+  Training depth mapper without LayerNorm...
+  📊 Training on 100 TRUE samples, depths range: [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.035831, Dist: mean=0.022, std=0.002
+  Epoch 100: Loss = 0.006495, Dist: mean=0.184, std=0.025
+  Epoch 200: Loss = 0.005222, Dist: mean=0.188, std=0.033
+  ✅ Training complete: Loss improved by 89.0% (0.0358 → 0.0039)
+Saved: results/exp_validation_suite/deepseek/deepseek_exp4b_layernorm_ablation.png
+  ≈ Similar performance (diff=-2.5%)
+     → LayerNorm doesn't significantly affect results
+
+=== Exp 4C: Perplexity Control ===
+  Checking if hyperbolic distance is just measuring perplexity...
+
+📊 Perplexity Control Check:
+  Computing perplexity for 50 samples...
+Computing perplexity: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 50/50 [00:02<00:00, 22.10it/s]
+  Perplexity range: [10.3, 32.3]
+  Distance range: [0.049, 0.358]
+  Correlation: r = 0.048, p = 0.7397
+  ✅ LOW: Distance captures something beyond perplexity
+Saved: results/exp_validation_suite/deepseek/deepseek_exp4c_perplexity_control.png
+
+============================================================
+ALL EXPERIMENTS COMPLETE (DEEPSEEK)
+============================================================
+Results saved to: results/exp_validation_suite/deepseek/
+
+📊 PHASE 3 (Original Experiments):
+  - Exp 3A: Same-domain test (Fiction→Animals)
+  - Exp 3B: Unrelated baseline
+  - Exp 3C: Fresh trained probe
+  - Exp 3D: Cross-domain generalization
+
+📊 PHASE 4 (Methodology Validation):
+  - Exp 4A: Classification Accuracy = 87.5%, AUROC = 0.937
+  - Exp 4B: LayerNorm Ablation: With LN = 87.5%, Without LN = 85.0%
+  - Exp 4C: Perplexity Correlation: r = 0.048
+
+📋 INTERPRETATION:
+  ✅ HYPOTHESIS SUPPORTED: Distinct geometries, not just perplexity
+  
+-----------------------------------------------------------------------------------
+
+((mats) ) (main) root@C.29103252:/workspace$ python3 exp_validation_suite.py --model qwen --seed 42
+Running on cuda
+
+🎮 GPU Configuration:
+  Found 1 GPU(s):
+    GPU 0: NVIDIA GeForce RTX 5090 (31.4 GB)
+  Single GPU mode
+🎲 Global seed set to 42 for reproducibility
+📊 Using CONFIG default samples: 300 (for qwen)
+
+--- Generating Balanced Datasets (seed=42) ---
+
+Generating fiction data...
+📊 Balanced Dataset (seed=42): 300 samples
+   • True: 100, Hall: 100, Unrel: 100
+
+Generating Animals (real English) data...
+📊 Balanced Dataset (seed=43): 300 samples
+   • True: 100, Hall: 100, Unrel: 100
+
+Generating Geography data (for cross-domain test)...
+📊 Balanced Dataset (seed=44): 300 samples
+   • True: 100, Hall: 100, Unrel: 100
+
+📊 Fiction Dataset Validation:
+   Total: 300 samples
+   • TRUE: 100 (33.3%)
+   • Hallucination: 100 (33.3%)
+   • Unrelated: 100 (33.3%)
+   • Depth range: 1 to 5
+   • 1-hop: 25, 5-hop: 18
+
+📊 Real English Dataset Validation:
+   Total: 300 samples
+   • TRUE: 100 (33.3%)
+   • Hallucination: 100 (33.3%)
+   • Unrelated: 100 (33.3%)
+   • Depth range: 1 to 5
+   • 1-hop: 30, 5-hop: 18
+
+🔬 Probe after reasoning: False
+Using single-GPU inference
+🔧 Loading Standard Model: Qwen/Qwen2.5-7B-Instruct on cuda
+`torch_dtype` is deprecated! Use `dtype` instead!
+model.safetensors.index.json: 27.8kB [00:00, 29.4MB/s]
+model-00002-of-00004.safetensors: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 3.86G/3.86G [01:52<00:00, 34.2MB/s]
+model-00003-of-00004.safetensors: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 3.86G/3.86G [02:04<00:00, 31.2MB/s]
+model-00004-of-00004.safetensors: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 3.56G/3.56G [02:19<00:00, 25.5MB/s]
+model-00001-of-00004.safetensors: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 3.95G/3.95G [02:39<00:00, 24.7MB/s]
+Fetching 4 files: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4/4 [02:40<00:00, 40.10s/it]
+Loading checkpoint shards: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4/4 [00:01<00:00,  2.39it/s]
+generation_config.json: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 243/243 [00:00<00:00, 808kB/s]
+tokenizer_config.json: 7.30kB [00:00, 10.9MB/s]
+vocab.json: 2.78MB [00:00, 32.7MB/s]
+merges.txt: 1.67MB [00:00, 23.3MB/s]
+tokenizer.json: 7.03MB [00:00, 28.0MB/s]
+WARNING:root:You are not using LayerNorm, so the writing weights can't be centered! Skipping
+Loaded pretrained model Qwen/Qwen2.5-7B-Instruct into HookedTransformer
+
+Extracting activations (Fiction)...
+Probing Layer 23 on 300 samples (from CONFIG['qwen'])
+  Probe after reasoning: False
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:18<00:00, 16.49it/s]
+
+Extracting activations (Real English)...
+Probing Layer 23 on 300 samples (from CONFIG['qwen'])
+  Probe after reasoning: False
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:14<00:00, 21.08it/s]
+
+Training base mapper on fiction data...
+  📊 Training on 100 TRUE samples, depths range: [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.010116, Dist: mean=0.234, std=0.008
+  Epoch 100: Loss = 0.005277, Dist: mean=0.189, std=0.031
+  Epoch 200: Loss = 0.004295, Dist: mean=0.187, std=0.046
+  ✅ Training complete: Loss improved by 64.7% (0.0101 → 0.0036)
+
+=== Exp 3A: Real English Control ===
+Saved: results/exp_validation_suite/qwen/qwen_exp3a_real_english.png
+  True (1 Hop): Mean = 0.25, Std = 0.10, N = 30
+  True (5 Hop): Mean = 0.34, Std = 0.11, N = 18
+  Hallucination: Mean = 0.34, Std = 0.09, N = 100
+  Unrelated: Mean = 0.39, Std = 0.09, N = 100
+
+=== Exp 3B: Unrelated Baseline ===
+Saved: results/exp_validation_suite/qwen/qwen_exp3b_unrelated_baseline.png
+  True (1 Hop): Mean = 0.25, Std = 0.10, N = 25
+  True (5 Hop): Mean = 0.50, Std = 0.06, N = 18
+  Hallucination: Mean = 0.43, Std = 0.07, N = 100
+  Unrelated: Mean = 0.56, Std = 0.05, N = 100
+
+=== Exp 3C: Trained Probe ===
+Training fresh probe on fiction data...
+  📊 Training on 100 TRUE samples, depths range: [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.009771, Dist: mean=0.230, std=0.006
+  Epoch 100: Loss = 0.005175, Dist: mean=0.186, std=0.033
+  Epoch 200: Loss = 0.004226, Dist: mean=0.187, std=0.047
+  ✅ Training complete: Loss improved by 64.1% (0.0098 → 0.0035)
+Saved: results/exp_validation_suite/qwen/qwen_exp3c_trained_probe.png
+  True (1 Hop): Mean = 0.25, Std = 0.10, N = 25
+  True (5 Hop): Mean = 0.50, Std = 0.06, N = 18
+  Hallucination: Mean = 0.43, Std = 0.07, N = 100
+  Unrelated: Mean = 0.56, Std = 0.06, N = 100
+
+=== Exp 3D: Cross-Domain Generalization (Animals → Geography) ===
+  This tests if hierarchy encoding generalizes across domains!
+
+Extracting activations (Geography)...
+Probing Layer 23 on 300 samples (from CONFIG['qwen'])
+  Probe after reasoning: False
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:14<00:00, 21.36it/s]
+
+Training mapper on Animals domain...
+  📊 Training on 100 TRUE samples, depths range: [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.008869, Dist: mean=0.192, std=0.008
+  Epoch 100: Loss = 0.004951, Dist: mean=0.184, std=0.035
+  Epoch 200: Loss = 0.002545, Dist: mean=0.183, std=0.058
+  ✅ Training complete: Loss improved by 86.2% (0.0089 → 0.0012)
+Saved: results/exp_validation_suite/qwen/qwen_exp3d_cross_domain.png
+  True (1 Hop): Mean = 0.42, Std = 0.11, N = 26
+  True (5 Hop): Mean = 0.53, Std = 0.07, N = 19
+  Hallucination: Mean = 0.47, Std = 0.08, N = 100
+  Unrelated: Mean = 0.48, Std = 0.09, N = 100
+
+============================================================
+PHASE 4: METHODOLOGY VALIDATION EXPERIMENTS
+============================================================
+These experiments address the circular training logic critique.
+
+=== Exp 4A: TRUE vs HALLUCINATION Classification ===
+  Training classifier on BOTH classes (not just TRUE)...
+  This is the proper test of geometric separability.
+
+  📊 Training classifier: 100 TRUE, 100 HALL samples
+     Train: 160, Test: 40
+     LayerNorm: True
+     Epoch 0: Loss = 0.7035, Train Acc = 48.75%
+     Epoch 100: Loss = 0.1445, Train Acc = 95.00%
+     Epoch 200: Loss = 0.0042, Train Acc = 100.00%
+  ✅ Test Results: Accuracy = 85.00%, AUROC = 0.884
+Saved: results/exp_validation_suite/qwen/qwen_exp4a_classification.png
+  🎉 HIGH ACCURACY: Geometries ARE distinct! Hypothesis supported.
+
+=== Exp 4B: LayerNorm Ablation Study ===
+  Testing if magnitude information (removed by LayerNorm) is important...
+  📊 Training classifier: 100 TRUE, 100 HALL samples
+     Train: 160, Test: 40
+     LayerNorm: False
+     Epoch 0: Loss = 0.6908, Train Acc = 53.75%
+     Epoch 100: Loss = 0.1296, Train Acc = 97.50%
+     Epoch 200: Loss = 0.0377, Train Acc = 100.00%
+  ✅ Test Results: Accuracy = 77.50%, AUROC = 0.780
+
+  Training depth mapper without LayerNorm...
+  📊 Training on 100 TRUE samples, depths range: [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.039515, Dist: mean=0.008, std=0.000
+  Epoch 100: Loss = 0.007178, Dist: mean=0.181, std=0.005
+  Epoch 200: Loss = 0.006786, Dist: mean=0.184, std=0.009
+  ✅ Training complete: Loss improved by 83.5% (0.0395 → 0.0065)
+Saved: results/exp_validation_suite/qwen/qwen_exp4b_layernorm_ablation.png
+  📉 WITH LayerNorm is BETTER (7.5%)
+     → LayerNorm helps stability without hurting performance
+
+=== Exp 4C: Perplexity Control ===
+  Checking if hyperbolic distance is just measuring perplexity...
+
+📊 Perplexity Control Check:
+  Computing perplexity for 50 samples...
+Computing perplexity: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 50/50 [00:02<00:00, 22.04it/s]
+  Perplexity range: [6.6, 23.0]
+  Distance range: [0.050, 0.309]
+  Correlation: r = 0.384, p = 0.0058
+  ⚠️ MODERATE: Distance partially reflects perplexity (~15% variance explained)
+Saved: results/exp_validation_suite/qwen/qwen_exp4c_perplexity_control.png
+
+============================================================
+ALL EXPERIMENTS COMPLETE (QWEN)
+============================================================
+Results saved to: results/exp_validation_suite/qwen/
+
+📊 PHASE 3 (Original Experiments):
+  - Exp 3A: Same-domain test (Fiction→Animals)
+  - Exp 3B: Unrelated baseline
+  - Exp 3C: Fresh trained probe
+  - Exp 3D: Cross-domain generalization
+
+📊 PHASE 4 (Methodology Validation):
+  - Exp 4A: Classification Accuracy = 85.0%, AUROC = 0.884
+  - Exp 4B: LayerNorm Ablation: With LN = 85.0%, Without LN = 77.5%
+  - Exp 4C: Perplexity Correlation: r = 0.384
+
+📋 INTERPRETATION:
+  ✅ HYPOTHESIS SUPPORTED: Distinct geometries, not just perplexity

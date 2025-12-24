@@ -1,0 +1,10 @@
+transformer_lens
+geoopt
+networkx
+scikit-dimension
+torch
+numpy
+tqdm
+matplotlib
+umap-learn
+python-dotenv

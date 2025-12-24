@@ -1,0 +1,238 @@
+((mats) ) (main) root@C.29103252:/workspace$ python exp_geometry_analysis.py --model deepseek --seed 42
+Running on cuda
+
+🎮 GPU Configuration:
+  Found 1 GPU(s):
+    GPU 0: NVIDIA GeForce RTX 5090 (31.4 GB)
+  Single GPU mode
+🎲 Global seed set to 42 for reproducibility
+📊 Using CONFIG default samples: 300 (for deepseek)
+
+--- Generating Balanced Datasets (seed=42) ---
+
+Generating fiction data...
+📊 Balanced Dataset Generated (seed=42):
+   Total: 300 samples
+   • True: 100 (33.3%)
+   • Hallucination: 100 (33.3%)
+   • Unrelated: 100 (33.3%)
+   • True depths: 50 shallow (1-2 hop), 50 deep (3+ hop)
+
+Generating real data...
+📊 Balanced Dataset Generated (seed=42):
+   Total: 300 samples
+   • True: 100 (33.3%)
+   • Hallucination: 100 (33.3%)
+   • Unrelated: 100 (33.3%)
+   • True depths: 50 shallow (1-2 hop), 50 deep (3+ hop)
+
+🔬 In-Process Reasoning State: True
+Using single-GPU inference
+Loading Reasoning Model: deepseek-ai/DeepSeek-R1-Distill-Qwen-7B on cuda
+...downloading via Transformers (AutoModel) to CPU...
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:02<00:00,  1.24s/it]
+...wrapping in HookedTransformer on cuda...
+Loaded pretrained model Qwen/Qwen2.5-7B-Instruct into HookedTransformer
+Inference on 300 samples...
+  In-Process Reasoning: True
+  Probing Layer 23 (from CONFIG['deepseek'])
+  Reasoning tokens: 512
+ Thinking Token Probe Stats (MI Peaks):
+  Avg thinking tokens per sample: 21.3
+  Samples with 0 thinking tokens (fallback): 41/300 (13.7%)
+  Min/Max thinking tokens: 0/43
+Saving plots with prefix: deepseek_
+Running Phase 1 & 2 Analysis (deepseek)...
+  Probe after reasoning: True
+  Using pre-computed activations (300 samples)
+Computing complexity scaling (REAL data)...
+  📊 Training HyperbolicMapper: 100 samples, depths [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.014117, Dist: mean=0.257, std=0.014
+  Epoch 100: Loss = 0.002721, Dist: mean=0.188, std=0.065
+  ✅ Complete: 91.1% improvement (0.0141 → 0.0013)
+  ✓ Saved complexity scaling and wormhole plots
+
+📊 Train/Test Split: 240 train, 60 test
+  📊 Training HyperbolicMapper: 76 samples, depths [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.009272, Dist: mean=0.223, std=0.012
+  Epoch 100: Loss = 0.002102, Dist: mean=0.194, std=0.070
+  Epoch 200: Loss = 0.001093, Dist: mean=0.194, std=0.083
+  ✅ Complete: 93.4% improvement (0.0093 → 0.0006)
+  📊 Training EuclideanMapper: 76 samples, depths [1, 5]
+  🎯 Targets (α=N/A): [0.200, 1.000]
+  Epoch 0: Loss = 17.426876, Dist: mean=4.647, std=0.581
+  Epoch 100: Loss = 0.000399, Dist: mean=0.519, std=0.249
+  Epoch 200: Loss = 0.000006, Dist: mean=0.518, std=0.253
+  ✅ Complete: 100.0% improvement (17.4269 → 0.0000)
+
+--- Running Phase 7 Control Studies (deepseek) ---
+  📊 Training HyperbolicMapper: 100 samples, depths [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.009048, Dist: mean=0.196, std=0.019
+  Epoch 100: Loss = 0.006200, Dist: mean=0.188, std=0.029
+  Epoch 200: Loss = 0.004045, Dist: mean=0.187, std=0.046
+  ✅ Complete: 77.1% improvement (0.0090 → 0.0021)
+  Stress Test on 24 held-out TRUE samples
+
+============================================================
+INTRINSIC DIMENSION ANALYSIS (SVD Proxy)
+============================================================
+
+📊 Effective Dimension (explains 90% variance):
+  True samples (n=100):        ID = 15
+  Hallucination samples (n=100): ID = 12
+
+  Ratio (True/Hall): 1.25x
+  ✅ CONFIRMED: Truth has higher ID (1.25x) - NOT premature collapse
+
+✅ Saved: results/exp_geometry_analysis/intrinsic_dimension_analysis.png
+
+============================================================
+TRAJECTORY ANALYSIS: Reasoning Dynamics
+============================================================
+Analyzing how representations move through hyperbolic space during reasoning...
+
+Training mapper on fiction data for trajectory analysis...
+  📊 Training HyperbolicMapper: 100 samples, depths [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.011392, Dist: mean=0.228, std=0.022
+  Epoch 100: Loss = 0.002581, Dist: mean=0.187, std=0.067
+  ✅ Complete: 89.3% improvement (0.0114 → 0.0012)
+
+🔬 TRAJECTORY ANALYSIS (Layer 23, 512 tokens)
+  Analyzing 300 samples...
+  🧠 MI Peaks alignment: detecting thinking tokens
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:59<00:00,  5.04it/s]
+
+📊 Trajectory Summary (ALL TOKENS):
+  hallucination: Arc=70.63±32.21, Disp=0.32, Tort=85.05
+  unrelated: Arc=86.18±6.64, Disp=0.38, Tort=100.00
+  true: Arc=70.12±27.50, Disp=0.33, Tort=89.88
+
+🧠 Trajectory Summary (THINKING TOKENS ONLY - MI Peaks):
+  hallucination: Arc=5.44±3.85, ThinkCount=19.5, Density=0.038
+  unrelated: Arc=7.21±2.05, ThinkCount=26.0, Density=0.052
+  true: Arc=5.82±3.20, ThinkCount=18.3, Density=0.040
+
+=== Exp 5A: Arc Length by Sample Type ===
+Saved: results/exp_geometry_analysis/deepseek_exp5a_arc_length.png
+
+=== Exp 5B: Tortuosity (Efficiency of Thought) ===
+Saved: results/exp_geometry_analysis/deepseek_exp5b_tortuosity.png
+
+📊 TRAJECTORY INTERPRETATION:
+  ≈ Similar arc lengths - no clear difference
+
+=== Exp 5C: Thinking Token Density (MI Peaks Alignment) ===
+Saved: results/exp_geometry_analysis/deepseek_exp5c_thinking_density.png
+
+=== Exp 5D: Thinking vs All Trajectory Comparison ===
+Saved: results/exp_geometry_analysis/deepseek_exp5d_thinking_trajectory.png
+
+=== Exp 5E: Thinking Arc vs Count Correlation ===
+Saved: results/exp_geometry_analysis/deepseek_exp5e_think_correlation.png
+
+🧠 THINKING TRAJECTORY INTERPRETATION:
+  TRUE thinking arc: 5.82
+  HALL thinking arc: 5.44
+  ≈ Similar thinking trajectory lengths
+Saved trajectory metrics: results/exp_geometry_analysis/deepseek_trajectory_metrics.csv
+
+Done! Charts saved to results/exp_geometry_analysis/deepseek_*.png
+Metrics saved to results/exp_geometry_analysis/deepseek_metrics.txt
+
+------------------------------------------------------------------------------------
+
+((mats) ) (main) root@C.29103252:/workspace$ python3 exp_geometry_analysis.py --model qwen --seed 42
+Running on cuda
+
+🎮 GPU Configuration:
+  Found 1 GPU(s):
+    GPU 0: NVIDIA GeForce RTX 5090 (31.4 GB)
+  Single GPU mode
+🎲 Global seed set to 42 for reproducibility
+📊 Using CONFIG default samples: 300 (for qwen)
+
+--- Generating Balanced Datasets (seed=42) ---
+
+Generating fiction data...
+📊 Balanced Dataset Generated (seed=42):
+   Total: 300 samples
+   • True: 100 (33.3%)
+   • Hallucination: 100 (33.3%)
+   • Unrelated: 100 (33.3%)
+   • True depths: 50 shallow (1-2 hop), 50 deep (3+ hop)
+
+Generating real data...
+📊 Balanced Dataset Generated (seed=42):
+   Total: 300 samples
+   • True: 100 (33.3%)
+   • Hallucination: 100 (33.3%)
+   • Unrelated: 100 (33.3%)
+   • True depths: 50 shallow (1-2 hop), 50 deep (3+ hop)
+
+🔬 In-Process Reasoning State: False
+Using single-GPU inference
+Loading Standard Model: Qwen/Qwen2.5-7B-Instruct on cuda
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4/4 [00:01<00:00,  2.51it/s]
+WARNING:root:You are not using LayerNorm, so the writing weights can't be centered! Skipping
+Loaded pretrained model Qwen/Qwen2.5-7B-Instruct into HookedTransformer
+Inference on 300 samples...
+  In-Process Reasoning: False
+  Probing Layer 23 (from CONFIG['qwen'])
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:18<00:00, 16.52it/s]
+Saving plots with prefix: qwen_
+Running Phase 1 & 2 Analysis (qwen)...
+  Probe after reasoning: False
+  Using pre-computed activations (300 samples)
+Computing complexity scaling (REAL data)...
+  📊 Training HyperbolicMapper: 100 samples, depths [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.010452, Dist: mean=0.232, std=0.009
+  Epoch 100: Loss = 0.005679, Dist: mean=0.188, std=0.029
+  ✅ Complete: 57.8% improvement (0.0105 → 0.0044)
+  ✓ Saved complexity scaling and wormhole plots
+
+📊 Train/Test Split: 240 train, 60 test
+  📊 Training HyperbolicMapper: 76 samples, depths [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.009350, Dist: mean=0.229, std=0.006
+  Epoch 100: Loss = 0.004894, Dist: mean=0.188, std=0.030
+  Epoch 200: Loss = 0.003773, Dist: mean=0.188, std=0.044
+  ✅ Complete: 69.7% improvement (0.0094 → 0.0028)
+  📊 Training EuclideanMapper: 76 samples, depths [1, 5]
+  🎯 Targets (α=N/A): [0.200, 1.000]
+  Epoch 0: Loss = 9.422199, Dist: mean=3.560, std=0.132
+  Epoch 100: Loss = 0.004290, Dist: mean=0.504, std=0.202
+  Epoch 200: Loss = 0.000736, Dist: mean=0.520, std=0.228
+  ✅ Complete: 100.0% improvement (9.4222 → 0.0000)
+
+--- Running Phase 7 Control Studies (qwen) ---
+  📊 Training HyperbolicMapper: 100 samples, depths [1, 5]
+  🎯 Targets (α=0.075): [0.075, 0.375]
+  Epoch 0: Loss = 0.008876, Dist: mean=0.210, std=0.006
+  Epoch 100: Loss = 0.007229, Dist: mean=0.186, std=0.015
+  Epoch 200: Loss = 0.006497, Dist: mean=0.186, std=0.023
+  ✅ Complete: 35.8% improvement (0.0089 → 0.0057)
+  Stress Test on 24 held-out TRUE samples
+
+============================================================
+INTRINSIC DIMENSION ANALYSIS (SVD Proxy)
+============================================================
+
+📊 Effective Dimension (explains 90% variance):
+  True samples (n=100):        ID = 38
+  Hallucination samples (n=100): ID = 39
+
+  Ratio (True/Hall): 0.97x
+  ➡️ SIMILAR: No significant ID difference
+
+✅ Saved: results/exp_geometry_analysis/intrinsic_dimension_analysis.png
+
+Done! Charts saved to results/exp_geometry_analysis/qwen_*.png
+Metrics saved to results/exp_geometry_analysis/qwen_metrics.txt
+
