@@ -1,4 +1,4 @@
-mats) ) (main) root@C.29106652:/workspace$ python exp_hierarchical_probing.py --model deepseek --experiment all
+((mats) ) (main) root@C.29106652:/workspace$ python exp_hierarchical_probing.py --model deepseek --experiment all
 Running on cuda
 🎲 Global seed set to 42 for reproducibility
 ============================================================
