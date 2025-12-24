@@ -6,8 +6,8 @@ Standalone script to find the optimal probing layer for a given model.
 Tests True vs Hallucination separability across layers and saves a visualization.
 
 Usage:
-    python run_layer_validation.py --model qwen
-python run_layer_validation.py --model deepseek --samples 300
+    python exp_layer_sweep.py --model qwen --samples 300
+    python exp_layer_sweep.py --model deepseek --samples 300
 """
 
 import os

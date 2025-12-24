@@ -3,7 +3,7 @@ Phase 3: Robustness Validation Experiments
 ==========================================
 
 This script runs the Phase 3 robustness experiments with CORRECT scaling,
-matching the methodology in run_full_experiment.py.
+matching the methodology in exp_geometry_analysis.py.
 
 Experiments:
 - Exp 3A: Real English Control (Does the wormhole persist with real concepts?)
@@ -1137,7 +1137,7 @@ if __name__ == "__main__":
     prefix = args.model  # "qwen" or "deepseek"
     
     # Create output directory with prefix
-    output_dir = f"results/phase3_corrected/{prefix}"
+    output_dir = f"results/exp_validation_suite/{prefix}"
     os.makedirs(output_dir, exist_ok=True)
     
     # Generate BALANCED datasets (reproducible with seed)
@@ -1567,6 +1567,6 @@ if __name__ == "__main__":
     
     print("\nRun for other model:")
     if args.model == "qwen":
-        print("  python run_phase3_corrected.py --model deepseek")
+        print("  python exp_validation_suite.py --model deepseek")
     else:
-        print("  python run_phase3_corrected.py --model qwen")
+        print("  python exp_validation_suite.py --model qwen")

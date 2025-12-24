@@ -7,9 +7,9 @@ Key differences from our previous approach:
 4. Analysis: Layer sweep with Pearson correlation
 
 Usage:
-    python run_hprobes_replication.py --model qwen --experiment dyck
-    python run_hprobes_replication.py --model deepseek --experiment binary_tree
-    python run_hprobes_replication.py --model qwen --experiment all
+    python exp_geometry_analysis.py --model qwen --experiment dyck
+    python exp_geometry_analysis.py --model deepseek --experiment binary_tree
+    python exp_geometry_analysis.py --model qwen --experiment all
 """
 
 import os
@@ -37,7 +37,7 @@ from collections import defaultdict
 # Configuration
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Running on {device}")
-os.makedirs("results/hprobes", exist_ok=True)
+os.makedirs("results/exp_hierarchical_probing", exist_ok=True)
 
 # Model-Specific Configuration
 CONFIG = {
@@ -158,12 +158,6 @@ class DyckGenerator:
 class BinaryTreeGenerator:
     """
     Generate binary tree traversal tasks FROM A SINGLE SHARED TREE.
-    
-    CRITICAL FIX: H-Probes requires pairwise distances between samples.
-    This only makes sense when samples reference nodes in the SAME tree.
-    
-    Following the paper: "500 random start and end node pairs drawn from 
-    trees of depths 1–4"
     """
     def __init__(self, tree_depth=5, num_samples=400, seed=42):
         self.tree_depth = tree_depth
@@ -294,14 +288,13 @@ class BinaryTreeGenerator:
 
 
 # ==========================================
-# 2. PROBES (H-Probes Paper Methodology)
+# 2. PROBES 
 # ==========================================
 
 class PairwiseDistanceProbe(nn.Module):
     """
     Euclidean Pairwise Distance Probe.
     
-    H-probes paper methodology:
     L = Σᵢⱼ (||H·hᵢ - H·hⱼ|| - Dᵢⱼ)²
     
     Where H is a learnable projection matrix.
@@ -388,9 +381,7 @@ class HyperbolicPairwiseProbe(nn.Module):
 class DepthProbe:
     """
     Depth Probe using Logistic Regression.
-    
-    Following the paper: "For tree depth: Perform logistic regression"
-    """
+    Predicts depth labels from activations."""
     def __init__(self):
         self.classifier = None
     
@@ -657,10 +648,10 @@ def run_dyck_experiment(model, model_name):
     plt.title(f'Dyck String Depth Probe - {model_name}')
     plt.legend()
     plt.grid(True)
-    plt.savefig(f'results/hprobes/{model_name}_dyck_depth_correlation.png', dpi=150)
+    plt.savefig(f'results/exp_hierarchical_probing/{model_name}_dyck_depth_correlation.png', dpi=150)
     plt.close()
     
-    print(f"\n✅ Saved: results/hprobes/{model_name}_dyck_depth_correlation.png")
+    print(f"\n✅ Saved: results/exp_hierarchical_probing/{model_name}_dyck_depth_correlation.png")
     return depth_correlations
 
 
@@ -764,10 +755,10 @@ def run_binary_tree_experiment(model, model_name):
     plt.title(f'Binary Tree Distance Probe - {model_name}')
     plt.legend()
     plt.grid(True)
-    plt.savefig(f'results/hprobes/{model_name}_binary_tree_correlation.png', dpi=150)
+    plt.savefig(f'results/exp_hierarchical_probing/{model_name}_binary_tree_correlation.png', dpi=150)
     plt.close()
     
-    print(f"\n✅ Saved: results/hprobes/{model_name}_binary_tree_correlation.png")
+    print(f"\n✅ Saved: results/exp_hierarchical_probing/{model_name}_binary_tree_correlation.png")
     
     # Euclidean vs Hyperbolic comparison
     plt.figure(figsize=(8, 6))
@@ -779,10 +770,10 @@ def run_binary_tree_experiment(model, model_name):
     for bar, val in zip(bars, [euc_corr, hyp_corr]):
         plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.02, 
                  f'{val:.3f}', ha='center')
-    plt.savefig(f'results/hprobes/{model_name}_geometry_comparison.png', dpi=150)
+    plt.savefig(f'results/exp_hierarchical_probing/{model_name}_geometry_comparison.png', dpi=150)
     plt.close()
     
-    print(f"✅ Saved: results/hprobes/{model_name}_geometry_comparison.png")
+    print(f"✅ Saved: results/exp_hierarchical_probing/{model_name}_geometry_comparison.png")
     
     return layer_correlations, euc_corr, hyp_corr
 
@@ -940,10 +931,10 @@ def run_hallucination_extension(model, model_name):
     ax.text(3.5, max(values) * 1.1, 'TEST', ha='center', fontweight='bold')
     
     plt.tight_layout()
-    plt.savefig(f'results/hprobes/{model_name}_hallucination_pairwise.png', dpi=150)
+    plt.savefig(f'results/exp_hierarchical_probing/{model_name}_hallucination_pairwise.png', dpi=150)
     plt.close()
     
-    print(f"\n✅ Saved: results/hprobes/{model_name}_hallucination_pairwise.png")
+    print(f"\n✅ Saved: results/exp_hierarchical_probing/{model_name}_hallucination_pairwise.png")
     
     return {
         '1hop_1hop': dist_1hop_1hop,
@@ -959,7 +950,7 @@ def run_hallucination_extension(model, model_name):
 # ==========================================
 
 def main():
-    parser = argparse.ArgumentParser(description="H-Probes Paper Replication")
+    parser = argparse.ArgumentParser(description="Hierarchical-Probing Experiments")
     parser.add_argument('--model', type=str, default='qwen', 
                         choices=['qwen', 'deepseek'],
                         help='Model to use')
@@ -991,7 +982,7 @@ def main():
     print("\n" + "=" * 60)
     print(f"H-PROBES EXPERIMENTS COMPLETE ({model_name.upper()})")
     print("=" * 60)
-    print(f"Results saved to: results/hprobes/")
+    print(f"Results saved to: results/exp_hierarchical_probing/")
 
 
 if __name__ == "__main__":

@@ -69,7 +69,7 @@ def clear_generation_cache():
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Running on {device}")
-os.makedirs("results/plots", exist_ok=True)
+os.makedirs("results/exp_geometry_analysis", exist_ok=True)
 
 # ==========================================
 # MULTI-GPU CONFIGURATION (Auto-Detection)
@@ -1143,9 +1143,9 @@ def analyze_intrinsic_dimension(acts, metas, threshold=0.9):
         plt.legend()
     
     plt.tight_layout()
-    plt.savefig("results/plots/intrinsic_dimension_analysis.png", dpi=150)
+    plt.savefig("results/exp_geometry_analysis/intrinsic_dimension_analysis.png", dpi=150)
     plt.close()
-    print(f"\n✅ Saved: results/plots/intrinsic_dimension_analysis.png")
+    print(f"\n✅ Saved: results/exp_geometry_analysis/intrinsic_dimension_analysis.png")
     
     return {
         'true_dim': true_dim,
@@ -1268,7 +1268,7 @@ def run_control_studies(acts, metas, prefix=""):
     plt.figure(figsize=(12, 6))
     sns.violinplot(data=pd.DataFrame(data), x='Condition', y='Distance', hue='Type', split=True, palette={'True': 'blue', 'Hallucination': 'red'})
     plt.title(f"Rigorous Controls ({prefix}): Signal vs Noise")
-    plt.savefig(f"results/plots/{prefix}_control_studies.png")
+    plt.savefig(f"results/exp_geometry_analysis/{prefix}_control_studies.png")
 
 def compare_geometries(acts, metas, prefix=""):
     """Compare Hyperbolic vs Euclidean geometry with proper train/test split."""
@@ -1330,7 +1330,7 @@ def compare_geometries(acts, metas, prefix=""):
     plt.figure(figsize=(8, 6))
     sns.lineplot(data=pd.DataFrame(data), x='True Depth', y='Error', hue='Geometry', marker='o')
     plt.title(f"Stress Test ({prefix}): GENERALIZATION Error (held-out test set)")
-    plt.savefig(f"results/plots/{prefix}_stress_test.png")
+    plt.savefig(f"results/exp_geometry_analysis/{prefix}_stress_test.png")
     plt.close()
     
     # 2. Geometry Wars (Hallucination vs Truth)
@@ -1356,7 +1356,7 @@ def compare_geometries(acts, metas, prefix=""):
     plt.axhline(y=1.0, color='r', linestyle='--', label='Truth (1-Hop)')
     plt.ylabel('Predicted Depth')
     plt.title(f"Geometry Wars ({prefix}): Hallucination Predicted Depth")
-    plt.savefig(f"results/plots/{prefix}_geometry_wars.png")
+    plt.savefig(f"results/exp_geometry_analysis/{prefix}_geometry_wars.png")
     plt.close()
     
     return {'hyp_avg': avg_h, 'euc_avg': avg_e, 'hyp_raw': raw_h, 'euc_raw': raw_e}
@@ -1411,7 +1411,7 @@ def run_phase_1_2(model, datasets, prefix="", probe_after_reasoning=False, f_act
         for bar, r in zip(bars, radii):
             plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
                      f'{r:.3f}', ha='center', fontsize=10)
-        plt.savefig(f"results/plots/{prefix}_complexity_scaling.png")
+        plt.savefig(f"results/exp_geometry_analysis/{prefix}_complexity_scaling.png")
         plt.close()
     
     # FIG 2: Basic Wormhole (uses CONFIG layer)
@@ -1449,7 +1449,7 @@ def run_phase_1_2(model, datasets, prefix="", probe_after_reasoning=False, f_act
     handles, labels = plt.gca().get_legend_handles_labels()
     plt.legend(handles, labels, bbox_to_anchor=(1.05, 1), loc='upper left', title='Sample Type')
     plt.tight_layout()
-    plt.savefig(f"results/plots/{prefix}_wormhole.png", dpi=150, bbox_inches='tight')
+    plt.savefig(f"results/exp_geometry_analysis/{prefix}_wormhole.png", dpi=150, bbox_inches='tight')
     plt.close()
     
     print(f"  \u2713 Saved complexity scaling and wormhole plots")
@@ -1534,7 +1534,7 @@ if __name__ == "__main__":
     id_results = analyze_intrinsic_dimension(f_acts, f_meta)
     
     # Save Metrics to Text File
-    with open(f"results/plots/{prefix}_metrics.txt", "w") as f:
+    with open(f"results/exp_geometry_analysis/{prefix}_metrics.txt", "w") as f:
         f.write(f"--- Metrics for {prefix} ---\n")
         f.write(f"Model: {prefix}\n")
         f.write(f"Layer: {CONFIG[prefix]['layer']}\n")
@@ -1604,9 +1604,9 @@ if __name__ == "__main__":
             axes[1].set_xlabel('Logical Depth')
         
         plt.tight_layout()
-        plt.savefig(f"results/plots/{prefix}_exp5a_arc_length.png", dpi=150)
+        plt.savefig(f"results/exp_geometry_analysis/{prefix}_exp5a_arc_length.png", dpi=150)
         plt.close()
-        print(f"Saved: results/plots/{prefix}_exp5a_arc_length.png")
+        print(f"Saved: results/exp_geometry_analysis/{prefix}_exp5a_arc_length.png")
         
         # ==========================================
         # Exp 5B: Tortuosity (Efficiency)
@@ -1643,9 +1643,9 @@ if __name__ == "__main__":
         axes[1].legend()
         
         plt.tight_layout()
-        plt.savefig(f"results/plots/{prefix}_exp5b_tortuosity.png", dpi=150)
+        plt.savefig(f"results/exp_geometry_analysis/{prefix}_exp5b_tortuosity.png", dpi=150)
         plt.close()
-        print(f"Saved: results/plots/{prefix}_exp5b_tortuosity.png")
+        print(f"Saved: results/exp_geometry_analysis/{prefix}_exp5b_tortuosity.png")
         
         # Interpretation
         hall_arc = traj_df[traj_df['type'] == 'hallucination']['all_arc_length'].mean() if 'hallucination' in traj_df['type'].values else 0
@@ -1698,9 +1698,9 @@ if __name__ == "__main__":
         axes[1].legend()
         
         plt.tight_layout()
-        plt.savefig(f"results/plots/{prefix}_exp5c_thinking_density.png", dpi=150)
+        plt.savefig(f"results/exp_geometry_analysis/{prefix}_exp5c_thinking_density.png", dpi=150)
         plt.close()
-        print(f"Saved: results/plots/{prefix}_exp5c_thinking_density.png")
+        print(f"Saved: results/exp_geometry_analysis/{prefix}_exp5c_thinking_density.png")
         
         # ==========================================
         # Exp 5D: Thinking-Only vs All-Token Trajectory
@@ -1738,9 +1738,9 @@ if __name__ == "__main__":
                         f'{height:.2f}', ha='center', va='bottom')
         
         plt.tight_layout()
-        plt.savefig(f"results/plots/{prefix}_exp5d_thinking_trajectory.png", dpi=150)
+        plt.savefig(f"results/exp_geometry_analysis/{prefix}_exp5d_thinking_trajectory.png", dpi=150)
         plt.close()
-        print(f"Saved: results/plots/{prefix}_exp5d_thinking_trajectory.png")
+        print(f"Saved: results/exp_geometry_analysis/{prefix}_exp5d_thinking_trajectory.png")
         
         # ==========================================
         # Exp 5E: Think Arc vs Thinking Count Correlation
@@ -1769,9 +1769,9 @@ if __name__ == "__main__":
             ax.legend()
         
         plt.tight_layout()
-        plt.savefig(f"results/plots/{prefix}_exp5e_think_correlation.png", dpi=150)
+        plt.savefig(f"results/exp_geometry_analysis/{prefix}_exp5e_think_correlation.png", dpi=150)
         plt.close()
-        print(f"Saved: results/plots/{prefix}_exp5e_think_correlation.png")
+        print(f"Saved: results/exp_geometry_analysis/{prefix}_exp5e_think_correlation.png")
         
         # Thinking interpretation
         print(f"\n🧠 THINKING TRAJECTORY INTERPRETATION:")
@@ -1785,10 +1785,10 @@ if __name__ == "__main__":
             print(f"  ≈ Similar thinking trajectory lengths")
         
         # Save trajectory metrics
-        traj_df.to_csv(f"results/plots/{prefix}_trajectory_metrics.csv", index=False)
-        print(f"Saved trajectory metrics: results/plots/{prefix}_trajectory_metrics.csv")
+        traj_df.to_csv(f"results/exp_geometry_analysis/{prefix}_trajectory_metrics.csv", index=False)
+        print(f"Saved trajectory metrics: results/exp_geometry_analysis/{prefix}_trajectory_metrics.csv")
         
-    print(f"\nDone! Charts saved to results/plots/{prefix}_*.png")
-    print(f"Metrics saved to results/plots/{prefix}_metrics.txt")
+    print(f"\nDone! Charts saved to results/exp_geometry_analysis/{prefix}_*.png")
+    print(f"Metrics saved to results/exp_geometry_analysis/{prefix}_metrics.txt")
     print(f"\n💡 TIP: Run 'python run_layer_validation.py --model {prefix}' to validate optimal layer")
 
